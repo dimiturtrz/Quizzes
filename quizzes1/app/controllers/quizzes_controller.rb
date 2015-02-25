@@ -1,8 +1,9 @@
 require 'quiz_master'
 
 class QuizzesController < ApplicationController
-  before_action :set_quiz, only: [:show, :edit, :update, :destroy, :create_question, :edit_question]
+  before_action :set_quiz, only: [:show, :edit, :update, :destroy, :create_question, :check_authentication]
   before_action :authenticate_user!, except: [:index, :show]
+  before_action :check_authentication, only: [:edit, :destroy, :create_question]
 
   # GET /quizzes
   # GET /quizzes.json
@@ -65,10 +66,14 @@ class QuizzesController < ApplicationController
     end
   end
   
-  def create_question
+  def check_authentication
+  	if @quiz.user != current_user
+  		redirect_to quizzes_path
+  		flash[:notice] = 'Can be modified only by the owner.' 
+  	end
   end
   
-  def edit_question
+  def create_question
   end
 
   private

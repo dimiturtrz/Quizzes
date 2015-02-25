@@ -1,5 +1,6 @@
 class QuestionsController < ApplicationController
-  before_action :set_question, only: [:show, :edit, :update, :destroy]
+  before_action :set_question, only: [:show, :edit, :update, :destroy, :check_authentication]
+  before_action :check_authentication, only: [:edit, :destroy]
 
   # GET /questions
   # GET /questions.json
@@ -68,6 +69,12 @@ class QuestionsController < ApplicationController
       @question = Question.find(params[:id])
     end
 
+	def check_authentication
+		if @question.quiz.user != current_user
+  		  redirect_to quizzes_path
+  		  flash[:notice] = 'Can be modified only by the owner.' 
+  	end
+	end
     # Never trust parameters from the scary internet, only allow the white list through.
     def question_params
       params.require(:question).permit(:question, :ans1, :ans2, :ans3, :ans4, :ans5, :ans6, :correct, :quiz_id)
